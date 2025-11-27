@@ -41,6 +41,30 @@ function logWarning(message) {
 }
 
 /**
+ * Check if a file matches any of the ignore patterns
+ * Supports simple glob patterns like *.js.map, tsconfig.tsbuildinfo
+ */
+function shouldIgnore(filePath, ignorePatterns = []) {
+    const fileName = path.basename(filePath);
+
+    for (const pattern of ignorePatterns) {
+        // Convert glob pattern to regex
+        const regexPattern = pattern
+            .replace(/\./g, "\\.") // Escape dots
+            .replace(/\*/g, ".*"); // Convert * to .*
+
+        const regex = new RegExp(`^${regexPattern}$`);
+
+        // Check against full path and file name
+        if (regex.test(filePath) || regex.test(fileName)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
  * Calculate SHA256 checksum of a file
  */
 function getFileChecksum(filePath) {
@@ -51,7 +75,7 @@ function getFileChecksum(filePath) {
 /**
  * Get all files in a directory recursively
  */
-function getFilesRecursively(dir, baseDir = dir) {
+function getFilesRecursively(dir, baseDir = dir, ignorePatterns = []) {
     const files = [];
 
     if (!fs.existsSync(dir)) {
@@ -69,8 +93,13 @@ function getFilesRecursively(dir, baseDir = dir) {
             continue;
         }
 
+        // Skip ignored files
+        if (shouldIgnore(relativePath, ignorePatterns)) {
+            continue;
+        }
+
         if (entry.isDirectory()) {
-            files.push(...getFilesRecursively(fullPath, baseDir));
+            files.push(...getFilesRecursively(fullPath, baseDir, ignorePatterns));
         } else {
             files.push(relativePath);
         }
@@ -83,8 +112,8 @@ function getFilesRecursively(dir, baseDir = dir) {
  * Generate a checksum for an entire directory
  * Returns an object with individual file checksums and a combined checksum
  */
-function getDirectoryChecksum(dir) {
-    const files = getFilesRecursively(dir);
+function getDirectoryChecksum(dir, ignorePatterns = []) {
+    const files = getFilesRecursively(dir, dir, ignorePatterns);
     const checksums = {};
 
     for (const file of files) {
@@ -114,21 +143,12 @@ function readJSON(filePath) {
 }
 
 /**
- * Clean generated files
- */
-function cleanDist(distPath) {
-    if (fs.existsSync(distPath)) {
-        fs.rmSync(distPath, { recursive: true, force: true });
-    }
-}
-
-/**
  * Check a single package
  */
 function checkPackage(packageName, config, rootDir) {
     logHeader(packageName);
 
-    const { path: packagePath, dist, buildScript } = config;
+    const { path: packagePath, dist, buildScript, ignore = [] } = config;
     const fullPackagePath = path.join(rootDir, packagePath);
     const distPath = path.join(fullPackagePath, dist);
     const nodeModulesPath = path.join(rootDir, "node_modules", packageName);
@@ -137,7 +157,7 @@ function checkPackage(packageName, config, rootDir) {
     const errors = [];
 
     // Step 1: Check version match
-    logStep("1/5", "Checking version match...");
+    logStep("1/4", "Checking version match...");
 
     const sourcePackageJson = path.join(fullPackagePath, "package.json");
     const nodeModulesPackageJson = path.join(nodeModulesPath, "package.json");
@@ -176,12 +196,9 @@ function checkPackage(packageName, config, rootDir) {
     }
 
     // Step 2: Build the package
-    logStep("2/5", "Building package...");
+    logStep("2/4", "Building package...");
 
     try {
-        // Clean dist before building
-        cleanDist(distPath);
-
         execSync(buildScript, {
             cwd: fullPackagePath,
             stdio: "pipe",
@@ -195,7 +212,7 @@ function checkPackage(packageName, config, rootDir) {
     }
 
     // Step 3: Generate checksums
-    logStep("3/5", "Generating checksums...");
+    logStep("3/4", "Generating checksums...");
 
     if (!fs.existsSync(distPath)) {
         logError(`Dist folder not found after build: ${distPath}`);
@@ -203,8 +220,8 @@ function checkPackage(packageName, config, rootDir) {
         return { success: false, errors };
     }
 
-    const sourceChecksum = getDirectoryChecksum(distPath);
-    const installedChecksum = getDirectoryChecksum(nodeModulesPath);
+    const sourceChecksum = getDirectoryChecksum(distPath, ignore);
+    const installedChecksum = getDirectoryChecksum(nodeModulesPath, ignore);
 
     log(`     Source dist checksum: ${sourceChecksum.combined}`, colors.cyan);
     log(
@@ -213,7 +230,7 @@ function checkPackage(packageName, config, rootDir) {
     );
 
     // Step 4: Compare checksums
-    logStep("4/5", "Comparing checksums...");
+    logStep("4/4", "Comparing checksums...");
 
     // Compare file lists
     const sourceFiles = new Set(sourceChecksum.fileList);
@@ -276,12 +293,6 @@ function checkPackage(packageName, config, rootDir) {
         logError("Checksums do not match - package may have been modified!");
         success = false;
     }
-
-    // Step 5: Clean generated files
-    logStep("5/5", "Cleaning generated files...");
-
-    cleanDist(distPath);
-    logSuccess("Cleanup completed");
 
     return { success, errors };
 }

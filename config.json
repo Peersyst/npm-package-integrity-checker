@@ -1,17 +1,39 @@
 {
-    "@swisstype/essential": {
-        "path": "packages/swisstype/packages/essential",
+    "@bloxer/vanilla": {
+        "path": "packages/bloxer/packages/vanilla",
         "dist": "dist",
-        "buildScript": "pnpm run build"
+        "buildScript": "pnpm run build",
+        "ignore": ["*.js.map", "tsconfig.tsbuildinfo"]
     },
-    "@swisstype/string": {
-        "path": "packages/swisstype/packages/string",
+
+    "@bloxer/ethers": {
+        "path": "packages/bloxer/packages/ethers",
         "dist": "dist",
-        "buildScript": "pnpm run build"
+        "buildScript": "pnpm run build",
+        "ignore": ["*.js.map", "tsconfig.tsbuildinfo"]
     },
-    "@swisstype/react": {
-        "path": "packages/swisstype/packages/react",
+    "@bloxer/ethers-typechain-contract": {
+        "path": "packages/bloxer/packages/ethers/packages/typechain-contract",
         "dist": "dist",
-        "buildScript": "pnpm run build"
+        "buildScript": "pnpm run build",
+        "ignore": ["*.js.map", "tsconfig.tsbuildinfo"]
+    },
+    "@bloxer/xrpl": {
+        "path": "packages/bloxer/packages/xrpl",
+        "dist": "dist",
+        "buildScript": "pnpm run build",
+        "ignore": ["*.js.map", "tsconfig.tsbuildinfo"]
+    },
+    "@bloxer/xrpl-account": {
+        "path": "packages/bloxer/packages/xrpl/packages/account",
+        "dist": "dist",
+        "buildScript": "pnpm run build",
+        "ignore": ["*.js.map", "tsconfig.tsbuildinfo"]
+    },
+    "@bloxer/xrpl-ledgers": {
+        "path": "packages/bloxer/packages/xrpl/packages/ledgers",
+        "dist": "dist",
+        "buildScript": "pnpm run build",
+        "ignore": ["*.js.map", "tsconfig.tsbuildinfo"]
     }
 }

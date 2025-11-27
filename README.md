@@ -10,7 +10,8 @@ This tool helps you verify that the code published to npm matches what you'd get
 2. **Build** — Builds the package from source using the specified build script
 3. **Checksum Generation** — Creates SHA256 checksums of both the built output and the installed package
 4. **Comparison** — Compares checksums to detect any differences
-5. **Cleanup** — Removes generated build artifacts
+
+Build outputs are preserved so you can manually inspect differences if any are found.
 
 ## Setup
 
@@ -60,25 +61,22 @@ Create entries in `config.json` for each package you want to verify:
 
 #### Configuration Options
 
-| Field         | Description                                                  |
-| ------------- | ------------------------------------------------------------ |
-| `path`        | Path to the source code directory (relative to project root) |
-| `dist`        | Path to the build output folder (relative to `path`)         |
-| `buildScript` | Command to build the package                                 |
+| Field         | Description                                                            |
+| ------------- | ---------------------------------------------------------------------- |
+| `path`        | Path to the source code directory (relative to project root)           |
+| `dist`        | Path to the build output folder (relative to `path`)                   |
+| `buildScript` | Command to build the package                                           |
+| `ignore`      | (Optional) Array of glob patterns for files to exclude from comparison |
 
 #### Example
 
 ```json
 {
-    "@swisstype/essential": {
-        "path": "packages/swisstype/packages/essential",
+    "@example/package": {
+        "path": "packages/example",
         "dist": "dist",
-        "buildScript": "pnpm run build"
-    },
-    "@swisstype/string": {
-        "path": "packages/swisstype/packages/string",
-        "dist": "dist",
-        "buildScript": "pnpm run build"
+        "buildScript": "pnpm run build",
+        "ignore": ["*.js.map", "tsconfig.tsbuildinfo"]
     }
 }
 ```
@@ -105,17 +103,15 @@ The tool provides detailed output for each package:
 ============================================================
 📦 Checking: @example/package
 ============================================================
-  [1/5] Checking version match...
+  [1/4] Checking version match...
   ✅ Version match: 1.0.0
-  [2/5] Building package...
+  [2/4] Building package...
   ✅ Build completed successfully
-  [3/5] Generating checksums...
+  [3/4] Generating checksums...
      Source dist checksum: abc123...
      Installed checksum:   abc123...
-  [4/5] Comparing checksums...
+  [4/4] Comparing checksums...
   ✅ All checksums match! Package integrity verified ✓
-  [5/5] Cleaning generated files...
-  ✅ Cleanup completed
 ```
 
 ### Exit Codes
