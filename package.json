@@ -13,12 +13,6 @@
     "dependencies": {
         "@swisstype/essential": "0.1.2",
         "@swisstype/string": "0.0.5",
-        "@swisstype/react": "0.0.2",
-        "@bloxer/vanilla": "1.0.0-alpha.2",
-        "@bloxer/ethers": "1.0.0-alpha.2",
-        "@bloxer/xrpl": "1.0.0-alpha.2",
-        "@bloxer/xrpl-account": "1.0.0-alpha.2",
-        "@bloxer/ethers-typechain-contract": "1.0.0-alpha.2",
-        "@bloxer/xrpl-ledgers": "1.0.0-alpha.2"
+        "@swisstype/react": "0.0.2"
     }
 }
