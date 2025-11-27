@@ -1,0 +1,17 @@
+{
+    "@swisstype/essential": {
+        "path": "packages/swisstype/packages/essential",
+        "dist": "dist",
+        "buildScript": "pnpm run build"
+    },
+    "@swisstype/string": {
+        "path": "packages/swisstype/packages/string",
+        "dist": "dist",
+        "buildScript": "pnpm run build"
+    },
+    "@swisstype/react": {
+        "path": "packages/swisstype/packages/react",
+        "dist": "dist",
+        "buildScript": "pnpm run build"
+    }
+}

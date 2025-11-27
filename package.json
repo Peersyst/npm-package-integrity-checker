@@ -1,0 +1,24 @@
+{
+    "name": "package-integrity-check",
+    "version": "1.0.0",
+    "description": "",
+    "license": "ISC",
+    "author": "",
+    "type": "commonjs",
+    "main": "index.js",
+    "scripts": {
+        "check": "node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "@swisstype/essential": "0.1.2",
+        "@swisstype/string": "0.0.5",
+        "@swisstype/react": "0.0.2",
+        "@bloxer/vanilla": "1.0.0-alpha.2",
+        "@bloxer/ethers": "1.0.0-alpha.2",
+        "@bloxer/xrpl": "1.0.0-alpha.2",
+        "@bloxer/xrpl-account": "1.0.0-alpha.2",
+        "@bloxer/ethers-typechain-contract": "1.0.0-alpha.2",
+        "@bloxer/xrpl-ledgers": "1.0.0-alpha.2"
+    }
+}
